@@ -3,11 +3,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Temperaturas implements ICarregadorDeTemperatura{
+
     private List<RegistroDoTempo> registros;
     private String nArq;
     private boolean dadosCarregados;
@@ -21,6 +23,53 @@ public class Temperaturas implements ICarregadorDeTemperatura{
 
     public boolean isDadosCarregados(){
         return dadosCarregados;
+    }
+
+    public RegistroDoTempo getRegistro(int dia, int mes, int ano) {
+        RegistroDoTempo newReg = registros
+        .stream()
+        .filter(reg->reg.getAno() == ano)
+        .filter(reg-> reg.getDia() == dia)
+        .filter(reg -> reg.getMes() == mes)
+        .findFirst()
+        .orElseThrow(IllegalArgumentException::new);
+    
+        System.out.println(newReg);
+
+        return newReg;
+    } 
+
+
+    public void alterarRegistro(LocalDateTime data) {
+        RegistroDoTempo newReg = registros
+        .stream()
+        .filter(reg->reg.getAno() == data.getYear())
+        .filter(reg-> reg.getDia() == data.getDayOfMonth())
+        .filter(reg -> reg.getMes() == data.getMonthValue())
+        .findFirst()
+        .orElseThrow(IllegalArgumentException::new);
+
+        newReg.setAno(data.getYear());
+        newReg.setDia(data.getDayOfMonth());
+        newReg.setMes(data.getMonthValue());
+
+        System.out.println(newReg);
+    }
+
+    public void removeReg(LocalDateTime data){
+        RegistroDoTempo newReg = registros
+        .stream()
+        .filter(reg->reg.getAno() == data.getYear())
+        .filter(reg-> reg.getDia() == data.getDayOfMonth())
+        .filter(reg -> reg.getMes() == data.getMonthValue())
+        .findFirst()
+        .orElseThrow(IllegalArgumentException::new);
+
+        registros.remove(newReg);
+
+        for(RegistroDoTempo rg : registros) {
+            System.out.println(rg);
+        }
     }
 
     public void carregaDados(){
