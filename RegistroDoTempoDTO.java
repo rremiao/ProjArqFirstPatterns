@@ -1,5 +1,4 @@
-//data precip maxima minima horas_insol temp_media um_relativa vel_vento
-public class RegistroDoTempo {
+public class RegistroDoTempoDTO {
     private int dia;
     private int mes;
     private int ano;
@@ -9,19 +8,6 @@ public class RegistroDoTempo {
     private double temperaturaMedia;
     private double umidadeRelativaDoAr;
     private double velocidadeDoVento;
-    
-    public RegistroDoTempo(int dia, int mes, int ano, double precipitacaoMaxima, double precipitacaoMinima,
-            double horasInsolacao, double temperaturaMedia, double umidadeRelativaDoAr, double velocidadeDoVento) {
-        this.dia = dia;
-        this.mes = mes;
-        this.ano = ano;
-        this.precipitacaoMaxima = precipitacaoMaxima;
-        this.precipitacaoMinima = precipitacaoMinima;
-        this.horasInsolacao = horasInsolacao;
-        this.temperaturaMedia = temperaturaMedia;
-        this.umidadeRelativaDoAr = umidadeRelativaDoAr;
-        this.velocidadeDoVento = velocidadeDoVento;
-    }
 
     public int getDia() {
         return dia;
@@ -29,6 +15,11 @@ public class RegistroDoTempo {
 
     public void setDia(int dia) {
         this.dia = dia;
+    }
+
+    public RegistroDoTempoDTO withDia(int dia) {
+        this.dia = dia;
+        return this;
     }
 
     public int getMes() {
@@ -39,12 +30,22 @@ public class RegistroDoTempo {
         this.mes = mes;
     }
 
+    public RegistroDoTempoDTO withMes(int mes) {
+        this.mes = mes;
+        return this;
+    }
+
     public int getAno() {
         return ano;
     }
 
     public void setAno(int ano) {
         this.ano = ano;
+    }
+
+    public RegistroDoTempoDTO withAno(int ano) {
+        this.ano = ano;
+        return this;
     }
 
     public double getPrecipitacaoMaxima() {
@@ -55,12 +56,22 @@ public class RegistroDoTempo {
         this.precipitacaoMaxima = precipitacaoMaxima;
     }
 
+    public RegistroDoTempoDTO withPrecipitacaoMaxima(double precipitacaoMaxima) {
+        this.precipitacaoMaxima = precipitacaoMaxima;
+        return this;
+    }
+
     public double getPrecipitacaoMinima() {
         return precipitacaoMinima;
     }
 
     public void setPrecipitacaoMinima(double precipitacaoMinima) {
         this.precipitacaoMinima = precipitacaoMinima;
+    }
+
+    public RegistroDoTempoDTO withPrecipitacaoMinima(double precipitacaoMinima) {
+        this.precipitacaoMinima = precipitacaoMinima;
+        return this;
     }
 
     public double getHorasInsolacao() {
@@ -71,12 +82,22 @@ public class RegistroDoTempo {
         this.horasInsolacao = horasInsolacao;
     }
 
+    public RegistroDoTempoDTO withHorasInsolacao(double horasInsolacao) {
+        this.horasInsolacao = horasInsolacao;
+        return this;
+    }
+
     public double getTemperaturaMedia() {
         return temperaturaMedia;
     }
 
     public void setTemperaturaMedia(double temperaturaMedia) {
         this.temperaturaMedia = temperaturaMedia;
+    }
+
+    public RegistroDoTempoDTO withTemperaturaMedia(double temperaturaMedia) {
+        this.temperaturaMedia = temperaturaMedia;
+        return this;
     }
 
     public double getUmidadeRelativaDoAr() {
@@ -87,6 +108,11 @@ public class RegistroDoTempo {
         this.umidadeRelativaDoAr = umidadeRelativaDoAr;
     }
 
+    public RegistroDoTempoDTO withUmidadeRelativaDoAr(double umidadeRelativaDoAr) {
+        this.umidadeRelativaDoAr = umidadeRelativaDoAr;
+        return this;
+    }
+
     public double getVelocidadeDoVento() {
         return velocidadeDoVento;
     }
@@ -95,11 +121,16 @@ public class RegistroDoTempo {
         this.velocidadeDoVento = velocidadeDoVento;
     }
 
+    public RegistroDoTempoDTO withVelocidadeDoVento(double velocidadeDoVento) {
+        this.velocidadeDoVento = velocidadeDoVento;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "RegistroDoTempo [ano=" + ano + ", dia=" + dia + ", horasInsolacao=" + horasInsolacao + ", mes=" + mes
                 + ", precipitacaoMaxima=" + precipitacaoMaxima + ", precipitacaoMinima=" + precipitacaoMinima
                 + ", temperaturaMedia=" + temperaturaMedia + ", umidadeRelativaDoAr=" + umidadeRelativaDoAr
                 + ", velocidadeDoVento=" + velocidadeDoVento + "]";
-    }    
+    }  
 }

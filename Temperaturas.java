@@ -1,12 +1,6 @@
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Scanner;
 
 public class Temperaturas implements ICarregadorDeTemperatura{
 
@@ -14,38 +8,47 @@ public class Temperaturas implements ICarregadorDeTemperatura{
     private String nArq;
     private boolean dadosCarregados;
 
-    public Temperaturas(){
-        registros = new LinkedList<>();
-        this.nArq = "poa_temps.txt";
-        dadosCarregados = false;
+    public Temperaturas() {
         carregaDados();
     }
-
+    
     public boolean isDadosCarregados(){
         return dadosCarregados;
     }
 
-    public RegistroDoTempo getRegistro(int dia, int mes, int ano) {
+    public RegistroDoTempoDTO getRegistro(LocalDateTime data) {
+        RegistroDoTempoDTO dto = new RegistroDoTempoDTO();
+
         RegistroDoTempo newReg = registros
         .stream()
-        .filter(reg->reg.getAno() == ano)
-        .filter(reg-> reg.getDia() == dia)
-        .filter(reg -> reg.getMes() == mes)
+        .filter(reg->reg.getAno() == data.getYear() 
+                    && reg.getMes() == data.getMonthValue()
+                    && reg.getDia() == data.getDayOfMonth())
         .findFirst()
         .orElseThrow(IllegalArgumentException::new);
     
         System.out.println(newReg);
 
-        return newReg;
-    } 
+        dto.withDia(newReg.getDia())
+           .withMes(newReg.getMes())
+           .withAno(newReg.getAno())
+           .withPrecipitacaoMaxima(newReg.getPrecipitacaoMaxima())
+           .withPrecipitacaoMinima(newReg.getPrecipitacaoMinima())
+           .withHorasInsolacao(newReg.getHorasInsolacao())
+           .withTemperaturaMedia(newReg.getTemperaturaMedia())
+           .withUmidadeRelativaDoAr(newReg.getUmidadeRelativaDoAr())
+           .withVelocidadeDoVento(newReg.getVelocidadeDoVento());
+        
 
+        return dto;
+    } 
 
     public void alterarRegistro(LocalDateTime data) {
         RegistroDoTempo newReg = registros
         .stream()
-        .filter(reg->reg.getAno() == data.getYear())
-        .filter(reg-> reg.getDia() == data.getDayOfMonth())
-        .filter(reg -> reg.getMes() == data.getMonthValue())
+        .filter(reg->reg.getAno() == data.getYear() 
+                    && reg.getMes() == data.getMonthValue()
+                    && reg.getDia() == data.getDayOfMonth())
         .findFirst()
         .orElseThrow(IllegalArgumentException::new);
 
@@ -59,9 +62,9 @@ public class Temperaturas implements ICarregadorDeTemperatura{
     public void removeReg(LocalDateTime data){
         RegistroDoTempo newReg = registros
         .stream()
-        .filter(reg->reg.getAno() == data.getYear())
-        .filter(reg-> reg.getDia() == data.getDayOfMonth())
-        .filter(reg -> reg.getMes() == data.getMonthValue())
+        .filter(reg->reg.getAno() == data.getYear() 
+                    && reg.getMes() == data.getMonthValue()
+                    && reg.getDia() == data.getDayOfMonth())
         .findFirst()
         .orElseThrow(IllegalArgumentException::new);
 
@@ -72,49 +75,58 @@ public class Temperaturas implements ICarregadorDeTemperatura{
         }
     }
 
-    public void carregaDados(){
-        String currDir = Paths.get("").toAbsolutePath().toString();
-        // Monta o nome do arquivo
-        String nomeCompleto = currDir+"/"+nArq;
-        System.out.println(nomeCompleto);
-        // Cria acesso ao "diretorio" da mídia (disco)
-        Path path = Paths.get(nomeCompleto);
+    public void addReg(RegistroDoTempo rg){
+        registros.add(rg);
+    }
 
-        String linha = "";
-         // Usa a classe scanner para fazer a leitura do arquivo
-         try (Scanner sc = new Scanner(Files.newBufferedReader(path, StandardCharsets.UTF_8))){
-            // Pula o cabecalho
-            sc.nextLine();
-            // Le os dados
-            while(sc.hasNext()){
-                linha = sc.nextLine();
-                String dados[] = linha.split(" ");
-                // Trata a data
-                String data[] = dados[0].split("/");
-                int dia = Integer.parseInt(data[0]);
-                int mes = Integer.parseInt(data[1]);
-                int ano = Integer.parseInt(data[2]);
-                // Trata demais dados
-                double precipitacaoMaxima = Double.parseDouble(dados[1]);
-                double precipitacaoMinima = Double.parseDouble(dados[2]);
-                double horasInsolacao = Double.parseDouble(dados[3]);
-                double temperaturaMedia = Double.parseDouble(dados[4]);
-                double umidadeRelativaDoAr = Double.parseDouble(dados[5]);
-                double velocidadeDoVento = Double.parseDouble(dados[6]);
-                // Cria um registro e insere na lista
-                RegistroDoTempo reg = new RegistroDoTempo(dia, mes, ano, precipitacaoMaxima, precipitacaoMinima, horasInsolacao, temperaturaMedia, umidadeRelativaDoAr, velocidadeDoVento);
-                registros.add(reg);
-            }
-         }catch (IOException x){
-             System.err.format("Erro de E/S: %s%n", x);
-         }
-         dadosCarregados = true;
-    }    
+    public String diaQueMaisChoveuNoAno(int ano){
+        System.out.println(registros);
+        RegistroDoTempo registro = registros
+        .stream()
+        .filter(reg->reg.getAno() == ano)
+        .max(Comparator.comparing(RegistroDoTempo::getPrecipitacaoMaxima))
+        .orElseThrow(IllegalArgumentException::new);
+        String resp = registro.getDia()+"/"+registro.getMes()+"/"+registro.getAno()+", "+registro.getPrecipitacaoMaxima();
+        return resp;
+    }
+
+    public void setNomeArquivo(String arquivo) {
+        this.nArq = arquivo;
+        this.nArq.trim();
+    }       
 
     public List<RegistroDoTempo> getDados(){
         if (!isDadosCarregados()){
             throw new IllegalStateException("Dados nao carregados");
         }
         return registros;
+    }
+
+    public void carregaDados(){
+        System.out.println("aqui dados");
+        ParseFile parseFile = new ParseFile();
+        try{
+            parseFile.carregaDados();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        
+         this.nArq = parseFile.getNArq();
+         this.registros = parseFile.getRegistros();
+         this.dadosCarregados = parseFile.getDadosCarregados();
+    }
+
+    public void carregaDados(String nome){
+        System.out.println("aqui");
+        ParseFile parseFile = new ParseFile();
+        try{
+            parseFile.setNArq(nome);
+            parseFile.carregaDados();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }        
+        this.nArq = parseFile.getNArq();
+        this.registros = parseFile.getRegistros();
+        this.dadosCarregados = parseFile.getDadosCarregados();
     }
 }
